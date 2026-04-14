@@ -187,6 +187,9 @@ class BlogSystem {
   async loadBlogIndex() {
     this.blogs = [];
     
+    // GitHub raw content URL base
+    const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/SO9010/so9010.github.io/main/blogs';
+    
     // EASY TO UPDATE: Just add your blog filenames here! TODO UPDATE ME HERE BLOGS
     const blogFiles = [
       '#1-My-First-Blog-Welome.md',
@@ -194,23 +197,33 @@ class BlogSystem {
     
     for (const filename of blogFiles) {
       try {
-        const response = await fetch(`blogs/${filename}`);
+        const rawUrl = `${GITHUB_RAW_URL}/${filename}`;
+        const response = await fetch(rawUrl);
         if (response.ok) {
-          const headResponse = await fetch(`blogs/${filename}`, { method: 'HEAD' });
-          const lastModified = headResponse.headers.get('Last-Modified');
+          // Get last modified from GitHub API
+          const apiUrl = `https://api.github.com/repos/SO9010/so9010.github.io/commits?path=blogs/${filename}&per_page=1`;
           let dateStr = 'Unknown';
+          let lastModified = null;
           
-          if (lastModified) {
-            const date = new Date(lastModified);
-            dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+          try {
+            const apiResponse = await fetch(apiUrl);
+            if (apiResponse.ok) {
+              const commits = await apiResponse.json();
+              if (commits.length > 0) {
+                lastModified = new Date(commits[0].commit.committer.date);
+                dateStr = lastModified.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+              }
+            }
+          } catch (e) {
+            console.log(`Failed to get date from GitHub API for ${filename}:`, e);
           }
           
           this.blogs.push({
             filename: filename,
-            path: `blogs/${filename}`,
-            title: filename.replace('.md', '').replace(/-/g, ' '),
+            path: rawUrl,
+            title: filename.replace('.md', '').replace(/#/g, '').replace(/-/g, ' '),
             dateStr: dateStr,
-            lastModified: lastModified ? new Date(lastModified) : null
+            lastModified: lastModified
           });
         }
       } catch (e) {
