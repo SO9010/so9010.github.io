@@ -187,6 +187,12 @@ class BlogSystem {
   async loadBlogIndex() {
     this.blogs = [];
     
+    // GitHub repository information for raw content URLs
+    const GITHUB_USER = 'SO9010'; // Replace with your GitHub username
+    const GITHUB_REPO = 'so9010.github.io';     // Replace with your repository name
+    const GITHUB_BRANCH = 'main'; // Replace with your branch name
+    const RAW_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}`;
+    
     // EASY TO UPDATE: Just add your blog filenames here!
     const blogFiles = [
       'My-First-Blog-Welome.md',
@@ -194,23 +200,16 @@ class BlogSystem {
     
     for (const filename of blogFiles) {
       try {
-        const response = await fetch(`blogs/${filename}`);
+        const response = await fetch(`${RAW_URL}/blogs/${filename}`);
         if (response.ok) {
-          const headResponse = await fetch(`blogs/${filename}`, { method: 'HEAD' });
-          const lastModified = headResponse.headers.get('Last-Modified');
           let dateStr = 'Unknown';
-          
-          if (lastModified) {
-            const date = new Date(lastModified);
-            dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-          }
           
           this.blogs.push({
             filename: filename,
-            path: `blogs/${filename}`,
+            path: `${RAW_URL}/blogs/${filename}`,
             title: filename.replace('.md', '').replace(/-/g, ' '),
             dateStr: dateStr,
-            lastModified: lastModified ? new Date(lastModified) : null
+            lastModified: null
           });
         }
       } catch (e) {
@@ -218,12 +217,9 @@ class BlogSystem {
       }
     }
     
-    // Sort by date (newest first)
+    // Sort by filename (you can manually reorder in the blogFiles array)
     this.blogs.sort((a, b) => {
-      if (a.lastModified && b.lastModified) {
-        return b.lastModified - a.lastModified;
-      }
-      return b.filename.localeCompare(a.filename);
+      return a.filename.localeCompare(b.filename);
     });
     
     this.displayBlogList();
