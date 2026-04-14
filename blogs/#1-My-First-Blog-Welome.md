@@ -1,4 +1,4 @@
-# \#1 My Home Lab Journey: Self-Hosting Ente
+# 1 My Home Lab Journey: Self-Hosting Ente
 
 Hello, this is my first blog, and my journey into my home lab where I want to start it by replacing the services that I am currently paying for, to ones where I am self hosting, while keeping to correct back up rules, and complete security, so I am able to use it not only as a learning project but as one where I can use it as a replacement to commercial products.
 

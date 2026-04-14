@@ -187,8 +187,9 @@ class BlogSystem {
   async loadBlogIndex() {
     this.blogs = [];
     
-    // GitHub raw content URL base
-    const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/SO9010/so9010.github.io/main/blogs';
+    // GitHub raw content URL base - UPDATE BRANCH NAME IF NEEDED (main, master, etc)
+    const GITHUB_BRANCH = 'main';
+    const GITHUB_RAW_URL = `https://raw.githubusercontent.com/SO9010/so9010.github.io/${GITHUB_BRANCH}/blogs`;
     
     // EASY TO UPDATE: Just add your blog filenames here! TODO UPDATE ME HERE BLOGS
     const blogFiles = [
@@ -197,46 +198,38 @@ class BlogSystem {
     
     for (const filename of blogFiles) {
       try {
-        const rawUrl = `${GITHUB_RAW_URL}/${filename}`;
+        // URL encode the filename (# becomes %23, spaces become %20, etc)
+        const encodedFilename = encodeURIComponent(filename);
+        const rawUrl = `${GITHUB_RAW_URL}/${encodedFilename}`;
         const response = await fetch(rawUrl);
-        if (response.ok) {
-          // Get last modified from GitHub API
-          const apiUrl = `https://api.github.com/repos/SO9010/so9010.github.io/commits?path=blogs/${filename}&per_page=1`;
-          let dateStr = 'Unknown';
-          let lastModified = null;
-          
-          try {
-            const apiResponse = await fetch(apiUrl);
-            if (apiResponse.ok) {
-              const commits = await apiResponse.json();
-              if (commits.length > 0) {
-                lastModified = new Date(commits[0].commit.committer.date);
-                dateStr = lastModified.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-              }
-            }
-          } catch (e) {
-            console.log(`Failed to get date from GitHub API for ${filename}:`, e);
-          }
-          
-          this.blogs.push({
-            filename: filename,
-            path: rawUrl,
-            title: filename.replace('.md', '').replace(/#/g, '').replace(/-/g, ' '),
-            dateStr: dateStr,
-            lastModified: lastModified
-          });
+        
+        if (!response.ok) {
+          console.error(`Failed to load ${filename}: ${response.status} ${response.statusText}`);
+          continue;
         }
+        
+        // Just use filename for display, dates are optional
+        let dateStr = 'Unknown';
+        
+        this.blogs.push({
+          filename: filename,
+          path: rawUrl,
+          title: filename.replace('.md', '').replace(/-/g, ' '),
+          dateStr: dateStr,
+          lastModified: null
+        });
+        
+        console.log(`Successfully loaded: ${filename}`);
       } catch (e) {
-        console.log(`Failed to load ${filename}:`, e);
+        console.error(`Failed to load ${filename}:`, e);
       }
     }
     
-    // Sort by date (newest first)
+    // Sort by blog number (largest first)
     this.blogs.sort((a, b) => {
-      if (a.lastModified && b.lastModified) {
-        return b.lastModified - a.lastModified;
-      }
-      return b.filename.localeCompare(a.filename);
+      const numA = parseInt(a.filename.match(/^#?(\d+)/)?.[1] || 0);
+      const numB = parseInt(b.filename.match(/^#?(\d+)/)?.[1] || 0);
+      return numB - numA; // Descending order
     });
     
     this.displayBlogList();
@@ -256,7 +249,6 @@ class BlogSystem {
         <div class="blog-card-header">
           <div>
             <h3>${blog.title}</h3>
-            <div class="date">${blog.dateStr || blog.filename}</div>
           </div>
           <span class="expand-icon">▼</span>
         </div>
