@@ -187,9 +187,9 @@ class BlogSystem {
   async loadBlogIndex() {
     this.blogs = [];
     
-    // EASY TO UPDATE: Just add your blog filenames here!
+    // EASY TO UPDATE: Just add your blog filenames here! TODO UPDATE ME HERE BLOGS
     const blogFiles = [
-      'My-First-Blog-Welome.md',
+      '#1-My-First-Blog-Welome.md',
     ];
     
     for (const filename of blogFiles) {
