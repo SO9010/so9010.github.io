@@ -1,6 +1,18 @@
 // Conway's Game of Life background animation
-const canvas = document.getElementById('life-bg');
-const ctx = canvas.getContext('2d');
+let canvas = document.getElementById('life-bg');
+
+if (!canvas) {
+  console.error('Canvas not found! Waiting for DOM...');
+  document.addEventListener('DOMContentLoaded', () => {
+    canvas = document.getElementById('life-bg');
+    initGameOfLife();
+  });
+} else {
+  initGameOfLife();
+}
+
+function initGameOfLife() {
+  const ctx = canvas.getContext('2d');
 let width, height, cols, rows, cellSize = 13;
 let grid, next;
 let lastChange = 0;
@@ -18,8 +30,12 @@ canvas.addEventListener('mouseleave', () => {
   mouse.x = -1;
   mouse.y = -1;
 });
-canvas.addEventListener('mousedown', () => { mouse.down = true; });
-canvas.addEventListener('mouseup', () => { mouse.down = false; });
+canvas.addEventListener('mousedown', () => { 
+  mouse.down = true; 
+});
+canvas.addEventListener('mouseup', () => { 
+  mouse.down = false; 
+});
 
 function resize() {
   width = window.innerWidth;
@@ -49,19 +65,6 @@ function step() {
           count += grid[ny][nx];
         }
       }
-      // Mouse interaction: if mouse is near, randomly spawn or kill cells
-      if (mouse.x >= 0 && mouse.y >= 0) {
-        let px = Math.floor(mouse.x / cellSize);
-        let py = Math.floor(mouse.y / cellSize);
-        let dist = Math.hypot(px - x, py - y);
-        if (dist < 6) {
-          if (mouse.down) {
-            next[y][x] = 1; // Draw live cells on click
-          } else if (Math.random() < 0.03) {
-            next[y][x] = 1;
-          }
-        }
-      }
       let newVal = (grid[y][x] && (count === 2 || count === 3)) || (!grid[y][x] && count === 3) ? 1 : 0;
       if (next[y][x] !== newVal) changed = true;
       next[y][x] = newVal;
@@ -79,7 +82,11 @@ function draw() {
     for (let x = 0; x < cols; x++) {
       if (grid[y][x]) {
         ctx.fillStyle = '#665c54'; // Gruvbox dark fg
-        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        // Draw circle instead of square
+        const radius = cellSize / 2.5;
+        ctx.beginPath();
+        ctx.arc(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, radius, 0, Math.PI * 2);
+        ctx.fill();
       }
     }
   }
@@ -93,6 +100,26 @@ function hashGrid() {
 
 function animate() {
   let changed = step();
+  
+  // Add random noise where mouse is hovering
+  if (mouse.x >= 0 && mouse.y >= 0) {
+    let px = Math.floor(mouse.x / cellSize);
+    let py = Math.floor(mouse.y / cellSize);
+    const radius = 4; // Radius in cells
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        // Only add cells within a circular area
+        if (dx * dx + dy * dy <= radius * radius) {
+          if (Math.random() < 0.3) { // 30% chance to add cell
+            let ny = (py + dy + rows) % rows;
+            let nx = (px + dx + cols) % cols;
+            grid[ny][nx] = 1; // Set cell to alive
+          }
+        }
+      }
+    }
+  }
+  
   draw();
   let hash = hashGrid();
   
@@ -135,6 +162,7 @@ function animate() {
 window.addEventListener('resize', resize);
 resize();
 animate();
+}
 
 // ──── Blog System ────────────────────────────────────────────────────
 class BlogSystem {
