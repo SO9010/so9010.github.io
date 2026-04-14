@@ -543,6 +543,8 @@ section {
 
 .blog-card.expanded {
   min-height: auto;
+  max-height: calc(100vh - 12rem);
+  overflow-y: auto;
 }
 
 .blog-card .blog-card-header {
@@ -556,8 +558,9 @@ section {
 .blog-card .blog-card-content {
   display: none;
   margin-top: 1.5rem;
-  max-height: 80vh;
+  max-height: 60vh;
   overflow-y: auto;
+  padding-right: 0.5rem;
 }
 
 .blog-card.expanded .blog-card-content {
