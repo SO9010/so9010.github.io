@@ -5,8 +5,8 @@ let width, height, cols, rows, cellSize = 13;
 let grid, next;
 let lastChange = 0;
 let stillFrames = 0;
-const MAX_STILL = 120; // ~6 seconds at 20fps
-let prevHash = '';
+const MAX_STILL = 60; // ~3 seconds at 20fps before adding chaos
+let prevHashes = []; // Track multiple hashes to detect cycles
 let mouse = { x: -1, y: -1, down: false };
 
 canvas.addEventListener('mousemove', e => {
@@ -95,17 +95,40 @@ function animate() {
   let changed = step();
   draw();
   let hash = hashGrid();
-  if (hash !== prevHash) {
-    stillFrames = 0;
-    prevHash = hash;
+  
+  // Track last few hashes to detect stuck patterns
+  prevHashes.push(hash);
+  if (prevHashes.length > 4) prevHashes.shift();
+  
+  // Check if stuck (same pattern or oscillating between 2 patterns)
+  let isStuck = false;
+  if (prevHashes.length > 2) {
+    // If any of the last 4 states match current, we're in a loop/stuck
+    const allButLast = prevHashes.slice(0, -1);
+    if (allButLast.includes(hash)) {
+      isStuck = true;
+      stillFrames++;
+    } else {
+      stillFrames = 0;
+    }
   } else {
-    stillFrames++;
-  }
-  if (stillFrames > MAX_STILL) {
-    resize();
     stillFrames = 0;
-    prevHash = '';
   }
+  
+  // If stuck too long, randomize to break the pattern
+  if (stillFrames > MAX_STILL || isStuck) {
+    // Add random noise to break stable patterns
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        if (Math.random() < 0.08) { // 8% chance to flip
+          grid[y][x] = grid[y][x] ? 0 : 1;
+        }
+      }
+    }
+    stillFrames = 0;
+    prevHashes = [];
+  }
+  
   setTimeout(animate, 50); // ~20fps (slower)
 }
 
