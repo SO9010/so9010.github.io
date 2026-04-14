@@ -187,74 +187,34 @@ class BlogSystem {
   async loadBlogIndex() {
     this.blogs = [];
     
-    // Automatically discover all .md files in the blogs folder
-    try {
-      const response = await fetch('blogs/');
-      if (response.ok) {
-        const html = await response.text();
-        
-        // Extract all .md file links from directory listing
-        const mdFiles = html.match(/href=["']([^"']*\.md)["']/g) || [];
-        const filesToCheck = mdFiles.map(match => match.match(/["']([^"']*)["']/)[1]).filter(f => !f.includes('index'));
-        
-        for (const filename of filesToCheck) {
-          try {
-            const fileResponse = await fetch(`blogs/${filename}`);
-            if (fileResponse.ok) {
-              const headResponse = await fetch(`blogs/${filename}`, { method: 'HEAD' });
-              const lastModified = headResponse.headers.get('Last-Modified');
-              let dateStr = 'Unknown';
-              
-              if (lastModified) {
-                const date = new Date(lastModified);
-                dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-              }
-              
-              this.blogs.push({
-                filename: filename,
-                path: `blogs/${filename}`,
-                title: filename.replace('.md', '').replace(/-/g, ' '),
-                dateStr: dateStr,
-                lastModified: lastModified ? new Date(lastModified) : null
-              });
-            }
-          } catch (e) {
-            console.log(`Failed to load ${filename}:`, e);
+    // EASY TO UPDATE: Just add your blog filenames here!
+    const blogFiles = [
+      'My-First-Blog-Welome.md',
+    ];
+    
+    for (const filename of blogFiles) {
+      try {
+        const response = await fetch(`blogs/${filename}`);
+        if (response.ok) {
+          const headResponse = await fetch(`blogs/${filename}`, { method: 'HEAD' });
+          const lastModified = headResponse.headers.get('Last-Modified');
+          let dateStr = 'Unknown';
+          
+          if (lastModified) {
+            const date = new Date(lastModified);
+            dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
           }
+          
+          this.blogs.push({
+            filename: filename,
+            path: `blogs/${filename}`,
+            title: filename.replace('.md', '').replace(/-/g, ' '),
+            dateStr: dateStr,
+            lastModified: lastModified ? new Date(lastModified) : null
+          });
         }
-      }
-    } catch (e) {
-      console.log('Directory discovery failed, falling back to manual list');
-      
-      // EASY TO UPDATE: Just add your blog filenames here!
-      const manualFiles = [
-        'My-First-Blog-Welome.md',
-      ];
-      
-      for (const filename of manualFiles) {
-        try {
-          const response = await fetch(`blogs/${filename}`);
-          if (response.ok) {
-            const headResponse = await fetch(`blogs/${filename}`, { method: 'HEAD' });
-            const lastModified = headResponse.headers.get('Last-Modified');
-            let dateStr = 'Unknown';
-            
-            if (lastModified) {
-              const date = new Date(lastModified);
-              dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-            }
-            
-            this.blogs.push({
-              filename: filename,
-              path: `blogs/${filename}`,
-              title: filename.replace('.md', '').replace(/-/g, ' '),
-              dateStr: dateStr,
-              lastModified: lastModified ? new Date(lastModified) : null
-            });
-          }
-        } catch (e) {
-          console.log(`Failed to load ${filename}:`, e);
-        }
+      } catch (e) {
+        console.log(`Failed to load ${filename}:`, e);
       }
     }
     
