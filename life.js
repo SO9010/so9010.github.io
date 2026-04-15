@@ -398,7 +398,7 @@ class BlogSystem {
     // Lists
     html = html.replace(/^\* (.*?)$/gm, '<li>$1</li>');
     html = html.replace(/^- (.*?)$/gm, '<li>$1</li>');
-    html = html.replace(/(<li>.*?<\/li>)/s, '<ul>$1</ul>');
+    html = html.replace(/(<li>[^\n]*<\/li>(\n<li>[^\n]*<\/li>)*)/g, '<ul>$1</ul>');
     html = html.replace(/<\/ul>\n<ul>/g, '');
 
     // Bold

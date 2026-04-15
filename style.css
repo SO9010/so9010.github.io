@@ -21,6 +21,36 @@
 
 html { scroll-behavior: smooth; }
 
+/* ─── Custom Scrollbars ────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 5px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-color: var(--border) var(--bg);
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -471,28 +501,34 @@ section {
 .section {
   display: none;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1;
   pointer-events: none;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .section.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
+  pointer-events: auto;
+  overflow-y: auto;
 }
 
 #about.active {
   padding-top: 0;
+  pointer-events: none;
 }
 
 #blogs.active {
   align-items: flex-start;
+  justify-content: flex-start;
   padding-top: 2rem;
+  overflow-y: auto;
 }
 
 .blogs-container {
@@ -503,6 +539,7 @@ section {
   position: relative;
   z-index: 2;
   pointer-events: auto;
+  min-height: auto;
 }
 
 .section-title {
@@ -543,8 +580,8 @@ section {
 
 .blog-card.expanded {
   min-height: auto;
-  max-height: calc(100vh - 12rem);
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
 }
 
 .blog-card .blog-card-header {
@@ -558,8 +595,7 @@ section {
 .blog-card .blog-card-content {
   display: none;
   margin-top: 1.5rem;
-  max-height: 60vh;
-  overflow-y: auto;
+  overflow-y: visible;
   padding-right: 0.5rem;
 }
 
@@ -647,11 +683,22 @@ section {
 }
 
 .blog-view ul, .blog-view ol {
-  margin: 1rem 0 1rem 2rem;
+  margin: 1rem 0 1rem 3rem;
 }
 
 .blog-view li {
   margin-bottom: 0.5rem;
+  margin-left: 1rem;
+}
+
+/* List styling for blog cards */
+.blog-card-content ul, .blog-card-content ol {
+  margin: 1rem 0 1rem 3rem;
+}
+
+.blog-card-content li {
+  margin-bottom: 0.5rem;
+  margin-left: 1rem;
 }
 
 .blog-view code {
