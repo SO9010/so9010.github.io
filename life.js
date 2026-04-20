@@ -245,6 +245,7 @@ class BlogSystem {
     // EASY TO UPDATE: Just add your blog filenames here! TODO UPDATE ME HERE BLOGS
     const blogFiles = [
       '#1-My-First-Blog-Welome.md',
+      '#2-Expanding-My-Homeserver-Proxmox-and-Ente.md',
     ];
     
     for (const filename of blogFiles) {
