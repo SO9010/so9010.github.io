@@ -413,9 +413,12 @@ class BlogSystem {
     html = html.replace(/^## (.*?)$/gm, '<h2>$1</h2>');
     html = html.replace(/^# (.*?)$/gm, '<h1>$1</h1>');
 
+    // Horizontal rules
+    html = html.replace(/^ {0,3}-{3,}\s*$/gm, '<hr>');
+
     // Lists
-    html = html.replace(/^\* (.*?)$/gm, '<li>$1</li>');
-    html = html.replace(/^- (.*?)$/gm, '<li>$1</li>');
+    html = html.replace(/^ *\* (.*?)$/gm, '<li>$1</li>');
+    html = html.replace(/^ *- (.*?)$/gm, '<li>$1</li>');
     html = html.replace(/(<li>[^\n]*<\/li>(\n<li>[^\n]*<\/li>)*)/g, '<ul>$1</ul>');
     html = html.replace(/<\/ul>\n<ul>/g, '');
 
@@ -442,7 +445,7 @@ class BlogSystem {
       const line = lines[i].trim();
       
       // Check if line is a block element
-      if (line.match(/^<(h[1-3]|ul|ol|pre|li|code)/) || line === '') {
+      if (line.match(/^<(h[1-3]|ul|ol|pre|li|code|hr)/) || line === '') {
         if (inBlock && result.length > 0) {
           result[result.length - 1] = '<p>' + result[result.length - 1] + '</p>';
           inBlock = false;
