@@ -246,6 +246,7 @@ class BlogSystem {
     const blogFiles = [
       '#1-My-First-Blog-Welome.md',
       '#2-Expanding-My-Homeserver-Proxmox-and-Ente.md',
+      '#3-E-Bikes-My-Obsession-and-Future-Plans.md',
     ];
     
     for (const filename of blogFiles) {
