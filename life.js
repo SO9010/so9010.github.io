@@ -238,16 +238,35 @@ class BlogSystem {
   async loadBlogIndex() {
     this.blogs = [];
     
-    // GitHub raw content URL base - UPDATE BRANCH NAME IF NEEDED (main, master, etc)
+    const GITHUB_REPO = 'SO9010/so9010.github.io';
     const GITHUB_BRANCH = 'main';
-    const GITHUB_RAW_URL = `https://raw.githubusercontent.com/SO9010/so9010.github.io/${GITHUB_BRANCH}/blogs`;
+    const GITHUB_RAW_URL = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/blogs`;
     
-    // EASY TO UPDATE: Just add your blog filenames here! TODO UPDATE ME HERE BLOGS
-    const blogFiles = [
-      '#1-My-First-Blog-Welome.md',
-      '#2-Expanding-My-Homeserver-Proxmox-and-Ente.md',
-      '#3-E-Bikes-My-Obsession-and-Future-Plans.md',
-    ];
+    // Discover blog files automatically from the GitHub Contents API
+    // Cache the file list in localStorage for 5 minutes to reduce API calls
+    const CACHE_KEY = 'blog_file_list';
+    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+    let blogFiles = [];
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (cached && (Date.now() - cached.ts) < CACHE_TTL) {
+        blogFiles = cached.files;
+      } else {
+        const contentsUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/blogs?ref=${GITHUB_BRANCH}`;
+        const contentsRes = await fetch(contentsUrl);
+        if (contentsRes.ok) {
+          const entries = await contentsRes.json();
+          blogFiles = entries
+            .filter(e => e.type === 'file' && e.name.endsWith('.md'))
+            .map(e => e.name);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), files: blogFiles }));
+        } else {
+          console.error(`Failed to list blogs directory: ${contentsRes.status} ${contentsRes.statusText}`);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch blog list from GitHub API:', e);
+    }
     
     for (const filename of blogFiles) {
       try {
@@ -261,14 +280,11 @@ class BlogSystem {
           continue;
         }
         
-        // Just use filename for display, dates are optional
-        let dateStr = 'Unknown';
-        
         this.blogs.push({
           filename: filename,
           path: rawUrl,
           title: filename.replace('.md', '').replace(/-/g, ' '),
-          dateStr: dateStr,
+          dateStr: 'Unknown',
           lastModified: null
         });
         
