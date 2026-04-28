@@ -1,3 +1,5 @@
+# E-Bikes, plans and obsession
+
 Hello Blog, you guys don't know this yet, but I have been obsessed with E-Bikes for the past few months, starting with buying my first E-Bike on amazon, then that getting stolen (long story short don't use combination locks), then building my own using a kit. 
 
 -----
