@@ -164,17 +164,168 @@ resize();
 animate();
 }
 
+// ──── Static Blog Data ────────────────────────────────────────────────────
+const STATIC_BLOGS = [
+  {
+    filename: '#3-E-Bikes-My-Obsession-and-Future-Plans.md',
+    title: 'E-Bikes, plans and obsession',
+    content: `# E-Bikes, plans and obsession
+
+Hello Blog, you guys don't know this yet, but I have been obsessed with E-Bikes for the past few months, starting with buying my first E-Bike on amazon, then that getting stolen (long story short don't use combination locks), then building my own using a kit. 
+
+-----
+## Introduction 
+I am loving the one that I built my self, it is using a 48V brushless hub motor and has a large 20ah battery which let's me go roughly 80km on one charge with me putting no effort in, its like flying. I have cycled from Cambridge center to St Ives and back on one charge and it had only lost half its charge! However, at the moment the bike is just a generic kit, and I feel there could be many adjustments.
+
+Here is a list of the features that I would like on my bike, but its not mandatory:
+
+ - Regenerative breaking (supported by my gearless, brushless motor) 
+ - Phone as information display
+ - Phone as controller
+ - Nice waterproof LEDs
+ - PAS 
+ - Indicator
+ - Anti theft auto lock motor
+ - Front and back lights, the front having 2, one for visibility and the other so I can see in the dark easily
+
+---
+## Current rough plan
+At the moment it am looking at the Flipsky 75100 Pro V2, which is a DIY hobby motor controller for things such as E-Bikes. I will be adding Julet connectors to it to ensure that it is waterproof and when the whole controller is finished I will be spraying it with a conformal coating to ensure that the PCB its self is waterproof. I want to have it so there is a USB pigtail, near the front of the bike so it has easy charging while connected to the bike's Bluetooth. I will be adding an esp32 to the device to add functionality such as the indicators and the LED lighting. ESP32s are commonly used with Flipsky products and python libraries exist for it.
+
+---
+## See you soon
+Anyway, that's it for now I am going on holiday for a few weeks where I will be researching this more, if you have any ideas do contact me on LinkedIn or Github. Maybe I will even record this into a YouTube video to document this properly as it is something of high interest to me and I would love to help others achieve a similar result that I hope to achieve. 
+
+Have a good day, thanks for reading!`
+  },
+  {
+    filename: '#2-Expanding-My-Homeserver-Proxmox-and-Ente.md',
+    title: 'Expanding My Home Server: Proxmox, Ente, and My First Steps Into Clustering',
+    content: `# Expanding My Home Server: Proxmox, Ente, and My First Steps Into Clustering
+
+It's been a few days since my last update, and most of that time has been spent researching, experimenting, and trying to understand how I wanted my home server setup to grow.
+
+I got very lucky during this process: my girlfriend's dad was getting rid of an old workstation from his workplace, and he gave it to me for free. This was a huge upgrade and meant I could finally move beyond my single-machine setup.
+
+With this new hardware, I decided to expand my infrastructure using Proxmox, a hypervisor and VM manager that supports clustering and live migration. I'll be keeping my small Wyse machine as a backup server, while the new workstation becomes the core of the cluster. My end goal is to move towards an Infrastructure as Code (IaC) style setup, so that if something goes wrong with the hardware, I can easily migrate or rebuild the entire environment.
+
+---
+
+## Installing Proxmox
+
+The first step was installing Proxmox Virtual Environment on both machines. I used the graphical installer, which functioned much like installing any other Linux distribution.
+
+During setup, I used Bitwarden to generate a strong, random username and password. Once installation was complete, I connected to the Proxmox web interface through my local network.
+
+One of my first configuration steps was setting up my HDDs as shared storage devices. This allows both machines in the cluster to access the same storage, which is essential for VM migration and future scalability.
+
+---
+
+## Creating the Ubuntu VM
+
+With Proxmox running, I created an Ubuntu virtual machine to host both Ente and Nextcloud.
+
+- Storage: HDD (SSDs were almost full)
+- RAM: 4 GB
+- CPU: 4 cores
+
+This is more than enough for my current needs, and the beauty of Proxmox is that resources can be easily expanded later if required.
+
+---
+
+## Installing Ente (Self-Hosted)
+
+To install Ente, I followed the official Quickstart – Self-Hosting guide and used their installation script. After running the test command, everything worked correctly on localhost.
+
+However, when testing again across my local network, I ran into an issue: the web app couldn't communicate with the "museum" service (the database).
+
+After some investigation, I realised this was because the services were still trying to communicate via localhost. Once I updated the configuration to use the machine's local IP address instead, everything worked perfectly again — I was able to create an account successfully.
+
+---
+
+## Exposing the Service to the Internet (Safely)
+
+At this point, Ente worked locally, but I wanted access from the public internet. This was the part I was most cautious about, as exposing services directly can introduce serious security risks.
+
+To minimise this risk, I decided to use Caddy as a reverse proxy. This means I only need to expose ports 80 and 443, rather than the application itself.
+
+I followed Ente's recommended reverse proxy setup and then added the necessary second-level domains in my Cloudflare dashboard, allowing DNS to resolve to my public IP address.
+
+Once everything was in place, I opened the required ports on my router…
+
+Success: https://photos.oldham.fyi now works from the open internet.
+
+---
+
+## Fixing Storage Limits (Ente CLI)
+
+Logging in and creating an account worked as expected, but I quickly hit Ente's default 10 GB storage limit.
+
+Since this is my own self-hosted instance, the solution was to use the Ente CLI to promote my account to an admin and remove the storage limit entirely.
+
+After installing the CLI and adjusting my account permissions, I now have effectively unlimited storage.
+
+---
+
+## What's Next?
+
+With Ente up and running securely on the internet, the next step is to:
+
+- Set up my backup Proxmox server
+- Continue moving toward a reproducible, Infrastructure-as-Code-style setup
+
+Overall, this has been a challenging but extremely rewarding experience, and I've learned a huge amount about virtualisation, networking, and safely exposing services to the internet.`
+  },
+  {
+    filename: '#1-My-First-Blog-Welome.md',
+    title: '1 My Home Lab Journey: Self-Hosting Ente',
+    content: `# 1 My Home Lab Journey: Self-Hosting Ente
+
+Hello, this is my first blog, and my journey into my home lab where I want to start it by replacing the services that I am currently paying for, to ones where I am self hosting, while keeping to correct back up rules, and complete security, so I am able to use it not only as a learning project but as one where I can use it as a replacement to commercial products.
+
+## Replacing Ente.com
+
+The first thing I plan to replace is my ente.com subscription. As much as I love my subscription, I am currently only on the base plan, which provides only 50 GB of storage, which is not enough. I am currently at 48 GB! 
+
+I also want to use it for my family so that they can stop using Google Photos, for security's sake [as we can see here how it doesnt use e2ee](www.chriscarley.net/blog/google-photos-e2ee). 
+
+I also want to be able to easily access all my old photos of me as a child, since they are currently on a rarely used hard drive, which also poses risks in case the hard drive fails. I will be consistently backing up my server.
+
+## My Current Hardware and What I Need to Get
+
+Currently I have a Wyse mini computer as my home server with:
+- 2 cores
+- 4GB of memory
+- 512GB SSD (added a while back)
+
+This works ok, however, I would like to be able to run the service for multiple users, which will require better specs. Don't worry, this machine won't go to waste; it will be used as a backup server for all my images and everything.
+
+### The New Setup
+
+I have just bought a new **Dell Optiplex 5050** with:
+- 16 GB of DDR4
+- i7-6700
+- 2TB HDD
+- 128 GB SSD
+
+All for **£74** on eBay, not a bad deal!
+
+## What's Next
+
+I will continue this blog when I get the PC, where I will go through my system hardening, then set up Ente, which will now be very easy to do!`
+  }
+];
+
 // ──── Blog System ────────────────────────────────────────────────────
 class BlogSystem {
   constructor() {
-    this.blogs = [];
+    this.blogs = STATIC_BLOGS;
     this.updatingHash = false;
     this.init();
   }
 
-  async init() {
+  init() {
     this.setupNavigation();
-    await this.loadBlogIndex();
     this.restoreStateFromUrl();
     window.addEventListener('hashchange', () => this.restoreStateFromUrl());
   }
@@ -235,78 +386,8 @@ class BlogSystem {
     }
   }
 
-  async loadBlogIndex() {
-    this.blogs = [];
-    
-    const GITHUB_REPO = 'SO9010/so9010.github.io';
-    const GITHUB_BRANCH = 'main';
-    const GITHUB_RAW_URL = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/blogs`;
-    
-    // Discover blog files automatically from the GitHub Contents API
-    // Cache the file list in localStorage for 5 minutes to reduce API calls
-    const CACHE_KEY = 'blog_file_list';
-    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-    let blogFiles = [];
-    try {
-      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-      if (cached && (Date.now() - cached.ts) < CACHE_TTL) {
-        blogFiles = cached.files;
-      } else {
-        const contentsUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/blogs?ref=${GITHUB_BRANCH}`;
-        const contentsRes = await fetch(contentsUrl);
-        if (contentsRes.ok) {
-          const entries = await contentsRes.json();
-          blogFiles = entries
-            .filter(e => e.type === 'file' && e.name.endsWith('.md'))
-            .map(e => e.name);
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), files: blogFiles }));
-        } else {
-          console.error(`Failed to list blogs directory: ${contentsRes.status} ${contentsRes.statusText}`);
-        }
-      }
-    } catch (e) {
-      console.error('Failed to fetch blog list from GitHub API:', e);
-    }
-    
-    for (const filename of blogFiles) {
-      try {
-        // URL encode the filename (# becomes %23, spaces become %20, etc)
-        const encodedFilename = encodeURIComponent(filename);
-        const rawUrl = `${GITHUB_RAW_URL}/${encodedFilename}`;
-        const response = await fetch(rawUrl);
-        
-        if (!response.ok) {
-          console.error(`Failed to load ${filename}: ${response.status} ${response.statusText}`);
-          continue;
-        }
-        
-        this.blogs.push({
-          filename: filename,
-          path: rawUrl,
-          title: filename.replace('.md', '').replace(/-/g, ' '),
-          dateStr: 'Unknown',
-          lastModified: null
-        });
-        
-        console.log(`Successfully loaded: ${filename}`);
-      } catch (e) {
-        console.error(`Failed to load ${filename}:`, e);
-      }
-    }
-    
-    // Sort by blog number (largest first)
-    this.blogs.sort((a, b) => {
-      const numA = parseInt(a.filename.match(/^#?(\d+)/)?.[1] || 0);
-      const numB = parseInt(b.filename.match(/^#?(\d+)/)?.[1] || 0);
-      return numB - numA; // Descending order
-    });
-    
-    this.displayBlogList();
-  }
-
   displayBlogList() {
     const blogList = document.getElementById('blog-list');
-    const blogView = document.getElementById('blog-view');
     
     if (this.blogs.length === 0) {
       blogList.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--muted);">No blogs yet. Add markdown files to the blogs/ folder.</p>';
@@ -321,7 +402,7 @@ class BlogSystem {
           </div>
           <span class="expand-icon">▼</span>
         </div>
-        <div class="blog-card-content"></div>
+        <div class="blog-card-content">${this.markdownToHtml(blog.content)}</div>
       </div>
     `).join('');
 
@@ -335,7 +416,7 @@ class BlogSystem {
     });
   }
 
-  async toggleBlog(card, index) {
+  toggleBlog(card, index) {
     const isExpanded = card.classList.contains('expanded');
     
     // Collapse all other cards
@@ -351,54 +432,10 @@ class BlogSystem {
       window.location.hash = '#blogs';
       setTimeout(() => { this.updatingHash = false; }, 100);
     } else {
-      const blog = this.blogs[index];
-      const contentDiv = card.querySelector('.blog-card-content');
-      
-      try {
-        const response = await fetch(blog.path);
-        const markdown = await response.text();
-        const html = this.markdownToHtml(markdown);
-        contentDiv.innerHTML = html;
-      } catch (error) {
-        contentDiv.innerHTML = `<p>Error loading blog: ${error.message}</p>`;
-      }
-      
       card.classList.add('expanded');
       this.updatingHash = true;
       window.location.hash = `#blog-${index}`;
       setTimeout(() => { this.updatingHash = false; }, 100);
-    }
-  }
-
-  async displayBlog(index) {
-    const blog = this.blogs[index];
-    const blogView = document.getElementById('blog-view');
-    
-    try {
-      const response = await fetch(blog.path);
-      const markdown = await response.text();
-      const html = this.markdownToHtml(markdown);
-      
-      blogView.innerHTML = `
-        <button class="back-to-blogs">← Back to Blogs</button>
-        <div>
-          <h1>${blog.title}</h1>
-          <div class="blog-date">${blog.filename}</div>
-          <div class="blog-content">
-            ${html}
-          </div>
-        </div>
-      `;
-      
-      blogView.querySelector('.back-to-blogs').addEventListener('click', () => {
-        blogView.classList.remove('active');
-      });
-      
-      blogView.classList.add('active');
-      blogView.scrollTop = 0;
-    } catch (error) {
-      blogView.innerHTML = `<p>Error loading blog: ${error.message}</p>`;
-      blogView.classList.add('active');
     }
   }
 
