@@ -701,6 +701,81 @@ section {
   margin-left: 1rem;
 }
 
+/* Heading and text styling for blog card content */
+.blog-card-content h1 {
+  color: var(--accent);
+  font-size: 2rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.blog-card-content h2 {
+  color: var(--accent2);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.6rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.3rem;
+}
+
+.blog-card-content h3 {
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.2rem 0 0.4rem;
+}
+
+.blog-card-content p {
+  margin-bottom: 1rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.blog-card-content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.2rem 0;
+}
+
+.blog-card-content code {
+  background: var(--bg);
+  color: var(--accent2);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.blog-card-content pre {
+  background: var(--bg);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+  border: 1px solid var(--border);
+}
+
+.blog-card-content pre code {
+  padding: 0;
+  background: none;
+  color: var(--text);
+  border-radius: 0;
+}
+
+.blog-card-content a {
+  color: var(--accent);
+}
+
+.blog-card-content a:hover,
+.blog-card-content a:focus {
+  text-decoration: underline;
+  color: var(--accent2);
+}
+
+.blog-card-content strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
 .blog-view code {
   background: var(--bg);
   color: #b8bb26;
