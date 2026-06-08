@@ -290,11 +290,13 @@ class BlogSystem {
     `).join('');
 
     blogList.querySelectorAll('.blog-card').forEach(card => {
-      const header = card.querySelector('.blog-card-header');
-      header.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const index = card.dataset.index;
-        this.toggleBlog(card, index);
+      // Whole card is the click target (incl. padding) so collapsed cards are
+      // easy to hit. When expanded, ignore clicks inside the content and on
+      // links so reading/selecting/link-following doesn't collapse the card.
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
+        if (card.classList.contains('expanded') && e.target.closest('.blog-card-content')) return;
+        this.toggleBlog(card, card.dataset.index);
       });
     });
   }
