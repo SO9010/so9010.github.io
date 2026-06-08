@@ -164,170 +164,49 @@ resize();
 animate();
 }
 
-// ──── Static Blog Data ────────────────────────────────────────────────────
-const STATIC_BLOGS = [
-  {
-    filename: '#3-E-Bikes-My-Obsession-and-Future-Plans.md',
-    title: 'E-Bikes, plans and obsession',
-    content: `# E-Bikes, plans and obsession
-
-Hello Blog, you guys don't know this yet, but I have been obsessed with E-Bikes for the past few months, starting with buying my first E-Bike on amazon, then that getting stolen (long story short don't use combination locks), then building my own using a kit. 
-
------
-## Introduction 
-I am loving the one that I built my self, it is using a 48V brushless hub motor and has a large 20ah battery which let's me go roughly 80km on one charge with me putting no effort in, its like flying. I have cycled from Cambridge center to St Ives and back on one charge and it had only lost half its charge! However, at the moment the bike is just a generic kit, and I feel there could be many adjustments.
-
-Here is a list of the features that I would like on my bike, but its not mandatory:
-
- - Regenerative breaking (supported by my gearless, brushless motor) 
- - Phone as information display
- - Phone as controller
- - Nice waterproof LEDs
- - PAS 
- - Indicator
- - Anti theft auto lock motor
- - Front and back lights, the front having 2, one for visibility and the other so I can see in the dark easily
-
----
-## Current rough plan
-At the moment it am looking at the Flipsky 75100 Pro V2, which is a DIY hobby motor controller for things such as E-Bikes. I will be adding Julet connectors to it to ensure that it is waterproof and when the whole controller is finished I will be spraying it with a conformal coating to ensure that the PCB its self is waterproof. I want to have it so there is a USB pigtail, near the front of the bike so it has easy charging while connected to the bike's Bluetooth. I will be adding an esp32 to the device to add functionality such as the indicators and the LED lighting. ESP32s are commonly used with Flipsky products and python libraries exist for it.
-
----
-## See you soon
-Anyway, that's it for now I am going on holiday for a few weeks where I will be researching this more, if you have any ideas do contact me on LinkedIn or Github. Maybe I will even record this into a YouTube video to document this properly as it is something of high interest to me and I would love to help others achieve a similar result that I hope to achieve. 
-
-Have a good day, thanks for reading!`
-  },
-  {
-    filename: '#2-Expanding-My-Homeserver-Proxmox-and-Ente.md',
-    title: 'Expanding My Home Server: Proxmox, Ente, and My First Steps Into Clustering',
-    content: `# Expanding My Home Server: Proxmox, Ente, and My First Steps Into Clustering
-
-It's been a few days since my last update, and most of that time has been spent researching, experimenting, and trying to understand how I wanted my home server setup to grow.
-
-I got very lucky during this process: my girlfriend's dad was getting rid of an old workstation from his workplace, and he gave it to me for free. This was a huge upgrade and meant I could finally move beyond my single-machine setup.
-
-With this new hardware, I decided to expand my infrastructure using Proxmox, a hypervisor and VM manager that supports clustering and live migration. I'll be keeping my small Wyse machine as a backup server, while the new workstation becomes the core of the cluster. My end goal is to move towards an Infrastructure as Code (IaC) style setup, so that if something goes wrong with the hardware, I can easily migrate or rebuild the entire environment.
-
----
-
-## Installing Proxmox
-
-The first step was installing Proxmox Virtual Environment on both machines. I used the graphical installer, which functioned much like installing any other Linux distribution.
-
-During setup, I used Bitwarden to generate a strong, random username and password. Once installation was complete, I connected to the Proxmox web interface through my local network.
-
-One of my first configuration steps was setting up my HDDs as shared storage devices. This allows both machines in the cluster to access the same storage, which is essential for VM migration and future scalability.
-
----
-
-## Creating the Ubuntu VM
-
-With Proxmox running, I created an Ubuntu virtual machine to host both Ente and Nextcloud.
-
-- Storage: HDD (SSDs were almost full)
-- RAM: 4 GB
-- CPU: 4 cores
-
-This is more than enough for my current needs, and the beauty of Proxmox is that resources can be easily expanded later if required.
-
----
-
-## Installing Ente (Self-Hosted)
-
-To install Ente, I followed the official Quickstart – Self-Hosting guide and used their installation script. After running the test command, everything worked correctly on localhost.
-
-However, when testing again across my local network, I ran into an issue: the web app couldn't communicate with the "museum" service (the database).
-
-After some investigation, I realised this was because the services were still trying to communicate via localhost. Once I updated the configuration to use the machine's local IP address instead, everything worked perfectly again — I was able to create an account successfully.
-
----
-
-## Exposing the Service to the Internet (Safely)
-
-At this point, Ente worked locally, but I wanted access from the public internet. This was the part I was most cautious about, as exposing services directly can introduce serious security risks.
-
-To minimise this risk, I decided to use Caddy as a reverse proxy. This means I only need to expose ports 80 and 443, rather than the application itself.
-
-I followed Ente's recommended reverse proxy setup and then added the necessary second-level domains in my Cloudflare dashboard, allowing DNS to resolve to my public IP address.
-
-Once everything was in place, I opened the required ports on my router…
-
-Success: https://photos.oldham.fyi now works from the open internet.
-
----
-
-## Fixing Storage Limits (Ente CLI)
-
-Logging in and creating an account worked as expected, but I quickly hit Ente's default 10 GB storage limit.
-
-Since this is my own self-hosted instance, the solution was to use the Ente CLI to promote my account to an admin and remove the storage limit entirely.
-
-After installing the CLI and adjusting my account permissions, I now have effectively unlimited storage.
-
----
-
-## What's Next?
-
-With Ente up and running securely on the internet, the next step is to:
-
-- Set up my backup Proxmox server
-- Continue moving toward a reproducible, Infrastructure-as-Code-style setup
-
-Overall, this has been a challenging but extremely rewarding experience, and I've learned a huge amount about virtualisation, networking, and safely exposing services to the internet.`
-  },
-  {
-    filename: '#1-My-First-Blog-Welome.md',
-    title: '1 My Home Lab Journey: Self-Hosting Ente',
-    content: `# 1 My Home Lab Journey: Self-Hosting Ente
-
-Hello, this is my first blog, and my journey into my home lab where I want to start it by replacing the services that I am currently paying for, to ones where I am self hosting, while keeping to correct back up rules, and complete security, so I am able to use it not only as a learning project but as one where I can use it as a replacement to commercial products.
-
-## Replacing Ente.com
-
-The first thing I plan to replace is my ente.com subscription. As much as I love my subscription, I am currently only on the base plan, which provides only 50 GB of storage, which is not enough. I am currently at 48 GB! 
-
-I also want to use it for my family so that they can stop using Google Photos, for security's sake [as we can see here how it doesnt use e2ee](www.chriscarley.net/blog/google-photos-e2ee). 
-
-I also want to be able to easily access all my old photos of me as a child, since they are currently on a rarely used hard drive, which also poses risks in case the hard drive fails. I will be consistently backing up my server.
-
-## My Current Hardware and What I Need to Get
-
-Currently I have a Wyse mini computer as my home server with:
-- 2 cores
-- 4GB of memory
-- 512GB SSD (added a while back)
-
-This works ok, however, I would like to be able to run the service for multiple users, which will require better specs. Don't worry, this machine won't go to waste; it will be used as a backup server for all my images and everything.
-
-### The New Setup
-
-I have just bought a new **Dell Optiplex 5050** with:
-- 16 GB of DDR4
-- i7-6700
-- 2TB HDD
-- 128 GB SSD
-
-All for **£74** on eBay, not a bad deal!
-
-## What's Next
-
-I will continue this blog when I get the PC, where I will go through my system hardening, then set up Ente, which will now be very easy to do!`
-  }
-];
-
 // ──── Blog System ────────────────────────────────────────────────────
 class BlogSystem {
   constructor() {
-    this.blogs = STATIC_BLOGS;
+    this.blogs = []; // populated from blogs.json, which is generated from the markdown files
     this.updatingHash = false;
     this.init();
   }
 
-  init() {
+  async init() {
+    await this.loadBlogs();
     this.setupNavigation();
     this.restoreStateFromUrl();
     window.addEventListener('hashchange', () => this.restoreStateFromUrl());
+  }
+
+  // Load the blog list from blogs.json, which the updater generates from the
+  // markdown files in the repo. This is the only source of blog content; if it
+  // can't be loaded the list stays empty (displayBlogList shows a message).
+  async loadBlogs() {
+    try {
+      const res = await fetch('./blogs.json', { cache: 'no-cache' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data) &&
+          data.every(b => b && typeof b.title === 'string' && typeof b.content === 'string')) {
+        this.blogs = data;
+      }
+    } catch (e) {
+      // Leave this.blogs empty; the page renders the "no blogs" message.
+    }
+  }
+
+  // Stable per-post identity for deep links. Uses the generated slug when
+  // present, otherwise derives one from the filename (matches generate-blogs.js).
+  slugFor(blog) {
+    if (blog.slug) return blog.slug;
+    return (blog.filename || blog.title || '')
+      .replace(/\.md$/i, '')
+      .replace(/^#\d+[-\s]*/, '')
+      .replace(/^#/, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
   }
 
   restoreStateFromUrl() {
@@ -336,16 +215,20 @@ class BlogSystem {
     const hash = window.location.hash.slice(1); // Remove #
     
     if (hash.startsWith('blog-')) {
-      const blogIndex = parseInt(hash.split('-')[1]);
-      if (!isNaN(blogIndex) && blogIndex < this.blogs.length) {
-        this.showSection('blogs');
-        setTimeout(() => {
-          const card = document.querySelector(`[data-index="${blogIndex}"]`);
-          if (card && !card.classList.contains('expanded')) {
-            this.toggleBlog(card, blogIndex);
-          }
-        }, 100);
-      }
+      const rest = hash.slice('blog-'.length);
+      this.showSection('blogs');
+      setTimeout(() => {
+        let card = null;
+        const asIndex = parseInt(rest, 10);
+        if (String(asIndex) === rest && asIndex >= 0 && asIndex < this.blogs.length) {
+          card = document.querySelector(`[data-index="${asIndex}"]`); // legacy index link
+        } else {
+          card = document.querySelector(`[data-slug="${CSS.escape(rest)}"]`); // stable slug link
+        }
+        if (card && !card.classList.contains('expanded')) {
+          this.toggleBlog(card, card.dataset.index);
+        }
+      }, 100);
     } else if (hash === 'blogs') {
       this.showSection('blogs');
     } else {
@@ -395,7 +278,7 @@ class BlogSystem {
     }
 
     blogList.innerHTML = this.blogs.map((blog, index) => `
-      <div class="blog-card" data-index="${index}">
+      <div class="blog-card" data-index="${index}" data-slug="${this.slugFor(blog)}">
         <div class="blog-card-header">
           <div>
             <h3>${blog.title}</h3>
@@ -434,13 +317,18 @@ class BlogSystem {
     } else {
       card.classList.add('expanded');
       this.updatingHash = true;
-      window.location.hash = `#blog-${index}`;
+      window.location.hash = `#blog-${card.dataset.slug || index}`;
       setTimeout(() => { this.updatingHash = false; }, 100);
     }
   }
 
   markdownToHtml(markdown) {
-    let html = markdown;
+    // Escape HTML first so raw <tags> in the source render as inert text and
+    // can't inject. The formatting rules below add their own tags afterwards.
+    let html = markdown
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
 
     // Code blocks
     html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
@@ -470,8 +358,17 @@ class BlogSystem {
     // Inline code
     html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-    // Links
-    html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+    // Links — only allow http(s)/mailto or relative/anchor URLs; reject
+    // javascript:, data:, etc. Bare "www." links are promoted to https.
+    html = html.replace(/\[(.*?)\]\((.*?)\)/g, (m, text, url) => {
+      const trimmed = url.trim();
+      const scheme = (trimmed.match(/^([a-z][a-z0-9+.-]*):/i) || [])[1];
+      if (scheme && !['http', 'https', 'mailto'].includes(scheme.toLowerCase())) {
+        return text; // drop unsafe scheme, keep the link text
+      }
+      const href = /^www\./i.test(trimmed) ? 'https://' + trimmed : trimmed;
+      return `<a href="${href}" target="_blank" rel="noopener">${text}</a>`;
+    });
 
     // Split into lines and process paragraphs
     const lines = html.split('\n');

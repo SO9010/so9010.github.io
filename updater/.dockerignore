@@ -1,0 +1,3 @@
+# Build context is ./updater; only entrypoint.sh + generate-blogs.js are copied.
+Dockerfile
+.dockerignore

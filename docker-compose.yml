@@ -1,0 +1,40 @@
+name: blog-site
+
+services:
+  # Clones the public repo into the shared volume and keeps blogs.json in sync
+  # with GitHub on an interval. Becomes "healthy" only after the first
+  # successful generation, which gates the web service below.
+  updater:
+    build: ./updater
+    container_name: blog-updater
+    restart: unless-stopped
+    environment:
+      REPO_URL: https://github.com/SO9010/so9010.github.io.git
+      REPO_BRANCH: main
+      UPDATE_INTERVAL: "900" # 15 minutes
+    volumes:
+      - site:/site
+    healthcheck:
+      test: ["CMD", "test", "-f", "/site/blogs.json"]
+      interval: 10s
+      timeout: 3s
+      retries: 30
+      start_period: 60s
+
+  # Serves the shared volume. Waits for the updater's first generation so it
+  # never serves an empty docroot.
+  web:
+    image: nginx:alpine
+    container_name: blog-web
+    restart: unless-stopped
+    depends_on:
+      updater:
+        condition: service_healthy
+    volumes:
+      - site:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8082:80"
+
+volumes:
+  site:
